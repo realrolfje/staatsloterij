@@ -24,8 +24,6 @@ import json
 import os
 
 uitslagdir = "uitslagen"
-Path(uitslagdir).mkdir(parents=True, exist_ok=True)
-
 
 def cleanhtml(raw_html):
     striptag = re.compile(r'<.*?>')
@@ -104,26 +102,26 @@ def getprijzen(uitslag, mijnlot):
     return prijzen
 
 
-print("================== Staatsloterij uitslag ===================== ")
-lotenfile = "loten.json"
-if Path(lotenfile).is_file():
-    with open(lotenfile, 'r') as json_file:
-        loten = json.load(json_file)
-else:
-    print("LET OP: TESTLOTEN")
-    with open("testloten.json", 'r') as json_file:
-        loten = json.load(json_file)
+if __name__ == "__main__":
+    print("================== Staatsloterij uitslag ===================== ")
+    lotenfile = "loten.json"
+    if Path(lotenfile).is_file():
+        with open(lotenfile, 'r') as json_file:
+            loten = json.load(json_file)
+    else:
+        print("LET OP: TESTLOTEN")
+        with open("testloten.json", 'r') as json_file:
+            loten = json.load(json_file)
 
-trekkingen = gettrekkingen()
-
-for trekking in trekkingen:
-
-    uitslag = getuitslag(trekking)
-
-    for mijnlot in loten:
-        prijzen = getprijzen(uitslag, mijnlot)
-        if prijzen:
-            for prijs in prijzen:
-                print(trekking.ljust(25, ' ')+prijs)
-        else:
-            print(trekking.ljust(25, ' ')+"Geen prijs.")
+    # Create uitslagen directory
+    Path(uitslagdir).mkdir(parents=True, exist_ok=True)
+    
+    for trekking in gettrekkingen():
+        uitslag = getuitslag(trekking)
+        for mijnlot in loten:
+            prijzen = getprijzen(uitslag, mijnlot)
+            if prijzen:
+                for prijs in prijzen:
+                    print(trekking.ljust(25, ' ')+prijs)
+            else:
+                print(trekking.ljust(25, ' ')+"Geen prijs.")
